@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package>
+    <DisplayName>Screenshotgun</DisplayName>
+    <Description>Open cross-platform screenshoter with cloud support and server part</Description>
+    <Version>{VERSION}</Version>
+    <ReleaseDate>{DATE}</ReleaseDate>
+    <Script>installscript.qs</Script>
+    <Default>true</Default>
+    <ForcedInstallation>true</ForcedInstallation>
+</Package>
