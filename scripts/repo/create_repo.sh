@@ -1,10 +1,17 @@
 #!/bin/bash
 
-ROOT_DIR="$(dirname "${BASH_SOURCE[0]}")/../../"
-mkdir -p "$ROOT_DIR/build"
+OUTPUT_PATH=$1
 
-repogen -v -p "$ROOT_DIR/configs/osx/packages" "$ROOT_DIR/build/osx"
-repogen -v -p "$ROOT_DIR/configs/windows/packages" "$ROOT_DIR/build/windows"
+ROOT_DIR="$(dirname "${BASH_SOURCE[0]}")/../.."
+FILE="$(basename "${BASH_SOURCE[0]}")"
 
-sed -i s/\{AnyApplication\}/Screenshotgun/g "$ROOT_DIR/build/osx/Updates.xml"
-sed -i s/\{AnyApplication\}/Screenshotgun/g "$ROOT_DIR/build/windows/Updates.xml"
+if [ -z "$OUTPUT_PATH" ]; then
+  echo "Usage $FILE <output_path>"
+  exit 1
+fi
+
+repogen -v -p "$ROOT_DIR/configs/osx/packages" "$OUTPUT_PATH/osx"
+repogen -v -p "$ROOT_DIR/configs/windows/packages" "$OUTPUT_PATH/windows"
+
+sed -i s/\{AnyApplication\}/Screenshotgun/g "$OUTPUT_PATH/osx/Updates.xml"
+sed -i s/\{AnyApplication\}/Screenshotgun/g "$OUTPUT_PATH/windows/Updates.xml"
