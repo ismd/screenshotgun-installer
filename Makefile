@@ -8,8 +8,8 @@ create_repo: update_packages
 update_repo: update_packages
 	./scripts/repo/update_repo.sh $(OUTPUT_PATH)
 
-clean:
-	rm -rf ./build
+create_installer:
+	./scripts/create_installer $(OUTPUT_FILE)
 
 # Additional
 update_packages:
