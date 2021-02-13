@@ -20,8 +20,8 @@ class Server(BaseHTTPRequestHandler):
 
                 data = json.loads(body)
                 if data['action'] == 'released':
-                    path = "%s/update.py %s" % (
-                        pathlib.Path(__file__).absolute(),
+                    path = "%s/src/update.py %s" % (
+                        pathlib.Path(__file__).parent.absolute(),
                         data['release']['url'])
 
                     print("Running in background", path)
