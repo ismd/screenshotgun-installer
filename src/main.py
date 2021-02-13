@@ -19,11 +19,10 @@ class Server(BaseHTTPRequestHandler):
                     raise ValueError('Invalid X-Hub-Signature-256')
 
                 data = json.loads(body)
-                if data['action'] == 'published':
-                    path = "%s/update.py %s/%s" % \
-                        (pathlib.Path(__file__).absolute(), \
-                         data['repository']['releases_url'], \
-                         data['release']['release_id'])
+                if data['action'] == 'released':
+                    path = "%s/update.py %s" % (
+                        pathlib.Path(__file__).absolute(),
+                        data['release']['url'])
 
                     print("Running in background", path)
                     subprocess.Popen(path)
