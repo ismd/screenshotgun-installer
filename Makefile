@@ -1,16 +1,34 @@
 #
-# Usage: make VERSION=<version> <target>
+# Usage:
+#
+# make VERSION=<version> create-repo
+# make VERSION=<version> update-repo
+# make create-installer
 #
 
-create_repo: update_packages
-	./scripts/repo/create_repo.sh $(OUTPUT_PATH)
+create-repo: update-packages
+	docker run --rm \
+		-v .:/app \
+		-v /srv/http:/srv/http \
+		ismd/screenshotgun-installer \
+		/app/scripts/update-repo.py \
+		-c /app/config \
+		-o /srv/http \
+		-v $(VERSION)
 
-update_repo: update_packages
-	./scripts/repo/update_repo.sh $(OUTPUT_PATH)
+update-repo: update-repo
+	docker run --rm \
+		-v .:/app \
+		-v /srv/http:/srv/http \
+		ismd/screenshotgun-installer \
+		/app/scripts/update-repo.py \
+		-c /app/config \
+		-o /srv/http \
+		-v $(VERSION)
 
-create_installer:
-	./scripts/create_installer $(OUTPUT_FILE)
-
-# Additional
-update_packages:
-	./scripts/update_packages.sh $(VERSION)
+create-installer:
+	docker run --rm \
+		-v .:/app \
+		ismd/screenshotgun-installer \
+		/app/scripts/update-repo.py \
+		-o /app

@@ -5,34 +5,28 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 import hmac
 import json
 import os
-
-from update import update
+import pathlib
+import subprocess
 
 class Server(BaseHTTPRequestHandler):
     def do_POST(self):
         try:
-            if self.path == "/_/update":
+            if self.path == '/_/update':
                 content_length = int(self.headers['Content-Length'])
                 body = self.rfile.read(content_length)
 
-                signature = hmac.new(
-                    os.environ["SECRET_TOKEN"].encode(),
-                    body,
-                    hashlib.sha256,
-                ).hexdigest()
-
-                if not hmac.compare_digest(signature, self.headers["X-Hub-Signature-256"].split('=')[1]):
-                    raise ValueError("Invalid X-Hub-Signature-256")
+                if not verify_signature(self.headers, body):
+                    raise ValueError('Invalid X-Hub-Signature-256')
 
                 data = json.loads(body)
+                if data['action'] == 'published':
+                    path = "%s/update.py %s/%s" % \
+                        (pathlib.Path(__file__).absolute(), \
+                         data['repository']['releases_url'], \
+                         data['release']['release_id'])
 
-                if data["action"] != "published":
-                    self.send_response(200)
-                    self.end_headers()
-
-                update(
-                    release_url="%s/%s" % (data["repository"]["releases_url"], data["release"]["release_id"]),
-                )
+                    print("Running in background", path)
+                    subprocess.Popen(path)
 
                 self.send_response(200)
                 self.end_headers()
@@ -45,9 +39,18 @@ class Server(BaseHTTPRequestHandler):
     def do_GET(self):
         self.send_error(404)
 
+def verify_signature(headers, body):
+    signature = hmac.new(
+        os.environ['SECRET_TOKEN'].encode(),
+        body,
+        hashlib.sha256,
+    ).hexdigest()
+
+    return hmac.compare_digest(signature, headers['X-Hub-Signature-256'].split('=')[1])
+
 def run(listen, port):
     server = HTTPServer((listen, port), Server)
-    print("Server started http://%s:%s" % (listen, port))
+    print('Server started http://%s:%s' % (listen, port))
 
     try:
         server.serve_forever()
@@ -55,24 +58,24 @@ def run(listen, port):
         pass
 
     server.server_close()
-    print("Server stopped.")
+    print('Server stopped.')
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Screenshotgun installer updater")
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Screenshotgun installer updater')
 
     parser.add_argument(
-        "-l",
-        "--listen",
-        default="localhost",
-        help="Specify the IP address on which the server listens",
+        '-l',
+        '--listen',
+        default='localhost',
+        help='Specify the IP address on which the server listens',
     )
 
     parser.add_argument(
-        "-p",
-        "--port",
+        '-p',
+        '--port',
         type=int,
         default=8000,
-        help="Specify the port on which the server listens",
+        help='Specify the port on which the server listens',
     )
 
     args = parser.parse_args()
