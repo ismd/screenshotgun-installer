@@ -11,7 +11,7 @@ create-repo:
 		-v ${PWD}:/app \
 		-v /srv/http:/srv/http \
 		ismd/screenshotgun-installer \
-		/app/scripts/create-repo.py \
+		/app/src/create-repo.py \
 		-c /app/config \
 		-o /srv/http \
 		-v $(VERSION)
@@ -21,7 +21,7 @@ update-repo:
 		-v ${PWD}:/app \
 		-v /srv/http:/srv/http \
 		ismd/screenshotgun-installer \
-		/app/scripts/update-repo.py \
+		/app/src/update-repo.py \
 		-c /app/config \
 		-o /srv/http \
 		-v $(VERSION)
@@ -30,5 +30,5 @@ create-installer:
 	docker run --rm \
 		-v ${PWD}:/app \
 		ismd/screenshotgun-installer \
-		/app/scripts/create-installer.py \
+		/app/src/create-installer.py \
 		-o /app

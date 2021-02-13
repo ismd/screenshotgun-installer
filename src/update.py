@@ -67,7 +67,7 @@ def unzip(linux, macos, windows):
             zip_ref.extractall(dir)
 
 def update_repository(version):
-    os.system('make -f %s/Makefile VERSION=%s update-repo' % pathlib.Path(__file__).parent.absolute(), version)
+    os.system('cd %s && make VERSION=%s update-repo' % pathlib.Path(__file__).parent.parent.absolute(), version)
 
 def update_launchpad():
     pass
