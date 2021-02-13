@@ -19,8 +19,8 @@ class Server(BaseHTTPRequestHandler):
                     raise ValueError('Invalid X-Hub-Signature-256')
 
                 data = json.loads(body)
-                if data['action'] == 'released':
-                    path = "%s/src/update.py %s" % (
+                if data['action'] in ['released', 'edited']:
+                    path = "%s/src/update.py -u %s -v %s" % (
                         pathlib.Path(__file__).parent.absolute(),
                         data['release']['url'])
 

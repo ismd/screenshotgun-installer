@@ -30,9 +30,12 @@ def fetch(url):
 
     with urllib.request.urlopen(url) as stream:
         release = json.loads(stream.read())
-        tag = release['tag_name']
 
-        for asset in release["assets"]:
+        if len(release['assets']) < 3:
+            raise FileNotFoundError('Not enough assets: %d (3 required)' % len(release['assets']))
+
+        tag = release['tag_name']
+        for asset in release['assets']:
             fetcher.fetch(asset['name'], asset['browser_download_url'])
 
     if not fetcher.linux:
@@ -42,7 +45,7 @@ def fetch(url):
     if not fetcher.windows:
         raise FileNotFoundError("Can't fetch windows asset")
 
-    return fetcher
+    return fetcher, tag
 
 def unzip(linux, macos, windows):
     for dir in ('/tmp/screenshotgun_linux', '/tmp/screenshotgun_macos', '/tmp/screenshotgun_windows'):
@@ -63,8 +66,8 @@ def unzip(linux, macos, windows):
         with zipfile.ZipFile(filename, 'r') as zip_ref:
             zip_ref.extractall(dir)
 
-def update_repository():
-    pass
+def update_repository(version):
+    os.system('make -f %s/Makefile VERSION=%s update-repo' % pathlib.Path(__file__).parent.absolute(), version)
 
 def update_launchpad():
     pass
@@ -75,12 +78,12 @@ def update_aur():
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Downloads artifacts from GitHub releases and updates local repository, Launchpad and AUR')
     parser.add_argument('-u', '--url', help='GitHub release url', required=True)
-    parser.add_argument('-v', '--version', help='Screenshotgun version', required=True)
 
     args = parser.parse_args()
-    fetcher = fetch(args.url)
+    fetcher, tag = fetch(args.url)
+    version = tag[1:]
     unzip(linux=fetcher.linux, macos=fetcher.macos, windows=fetcher.windows)
 
-    update_repository()
+    update_repository(version)
     update_launchpad()
     update_aur()

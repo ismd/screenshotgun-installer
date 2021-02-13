@@ -6,17 +6,17 @@
 # make create-installer
 #
 
-create-repo: update-packages
+create-repo:
 	docker run --rm \
 		-v .:/app \
 		-v /srv/http:/srv/http \
 		ismd/screenshotgun-installer \
-		/app/scripts/update-repo.py \
+		/app/scripts/create-repo.py \
 		-c /app/config \
 		-o /srv/http \
 		-v $(VERSION)
 
-update-repo: update-repo
+update-repo:
 	docker run --rm \
 		-v .:/app \
 		-v /srv/http:/srv/http \
@@ -30,5 +30,5 @@ create-installer:
 	docker run --rm \
 		-v .:/app \
 		ismd/screenshotgun-installer \
-		/app/scripts/update-repo.py \
+		/app/scripts/create-installer.py \
 		-o /app
