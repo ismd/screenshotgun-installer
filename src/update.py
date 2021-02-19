@@ -47,24 +47,28 @@ def fetch(url):
 
     return fetcher, tag
 
-def unzip(linux, macos, windows):
-    for dir in ('/tmp/screenshotgun_linux', '/tmp/screenshotgun_macos', '/tmp/screenshotgun_windows'):
-        try:
-            shutil.rmtree(dir)
-        except:
-            pass
+def unzip(linux_zip, macos_zip, windows_zip):
+    path = '/tmp/screenshotgun'
 
-        os.mkdir(dir)
+    try:
+        shutil.rmtree(path)
+    except:
+        pass
 
-        if dir == '/tmp/screenshotgun_linux':
-            filename = linux
-        elif dir == '/tmp/screenshotgun_macos':
-            filename = macos
-        elif dir == '/tmp/screenshotgun_windows':
-            filename = windows
+    os.mkdir(path)
+
+    for dir in ('linux', 'macos', 'windows'):
+        os.mkdir('%s/%s' % (path, dir))
+
+        if dir == 'linux':
+            filename = linux_zip
+        elif dir == 'macos':
+            filename = macos_zip
+        elif dir == 'windows':
+            filename = windows_zip
 
         with zipfile.ZipFile(filename, 'r') as zip_ref:
-            zip_ref.extractall(dir)
+            zip_ref.extractall('%s/%s' % (path, dir))
 
 def update_repository(version):
     os.system('cd %s && make VERSION=%s update-repo' % pathlib.Path(__file__).parent.parent.absolute(), version)
