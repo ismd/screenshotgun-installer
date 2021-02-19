@@ -1,30 +1,32 @@
 #
 # Usage:
 #
-# make VERSION=<version> create-repo
-# make VERSION=<version> update-repo
+# make VERSION=<version> OWNER=<user> GROUP=<group> OUTPUT=<dir> create-repo
+# make VERSION=<version> OWNER=<user> GROUP=<group> OUTPUT=<dir> update-repo
 # make create-installer
 #
 
 create-repo:
 	docker run --rm \
 		-v ${PWD}:/app \
-		-v /srv/http:/srv/http \
+		-v $(OUTPUT):/output \
 		ismd/screenshotgun-installer \
 		/app/src/create-repo.py \
 		-c /app/config \
-		-o /srv/http \
+		-o /output \
 		-v $(VERSION)
+	sudo chown -R $(OWNER):$(GROUP) $(OUTPUT)
 
 update-repo:
 	docker run --rm \
 		-v ${PWD}:/app \
-		-v /srv/http:/srv/http \
+		-v $(OUTPUT):/output \
 		ismd/screenshotgun-installer \
 		/app/src/update-repo.py \
 		-c /app/config \
-		-o /srv/http \
+		-o /output \
 		-v $(VERSION)
+	sudo chown -R $(OWNER):$(GROUP) $(OUTPUT)
 
 create-installer:
 	docker run --rm \
