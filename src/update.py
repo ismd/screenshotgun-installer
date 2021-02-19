@@ -70,8 +70,8 @@ def unzip(linux_zip, macos_zip, windows_zip):
         with zipfile.ZipFile(filename, 'r') as zip_ref:
             zip_ref.extractall('%s/%s' % (path, dir))
 
-def update_repository(version):
-    os.system('cd %s && make VERSION=%s update-repo' % pathlib.Path(__file__).parent.parent.absolute(), version)
+def update_repository(version, output, owner, group):
+    os.system('cd %s && make VERSION=%s OWNER=%s GROUP=%s OUTPUT=%s update-repo' % pathlib.Path(__file__).parent.parent.absolute(), version, owner, group, output)
 
 def update_launchpad():
     pass
@@ -81,13 +81,17 @@ def update_aur():
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Downloads artifacts from GitHub releases and updates local repository, Launchpad and AUR')
+
     parser.add_argument('-u', '--url', help='GitHub release url', required=True)
+    parser.add_argument('-o', '--output', help='Output directory', required=True)
+    parser.add_argument('--owner', help='Owner of output directory', required=True)
+    parser.add_argument('--group', help='Group of output directory', required=True)
 
     args = parser.parse_args()
     fetcher, tag = fetch(args.url)
     version = tag[1:]
     unzip(linux=fetcher.linux, macos=fetcher.macos, windows=fetcher.windows)
 
-    update_repository(version)
+    update_repository(version, args.output, args.owner, args.group)
     update_launchpad()
     update_aur()

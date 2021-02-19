@@ -8,6 +8,10 @@ import os
 import pathlib
 import subprocess
 
+output_dir = None
+output_owner = None
+output_group = None
+
 class Server(BaseHTTPRequestHandler):
     def do_POST(self):
         try:
@@ -20,9 +24,13 @@ class Server(BaseHTTPRequestHandler):
 
                 data = json.loads(body)
                 if data['action'] in ['released', 'edited']:
-                    path = "%s/src/update.py -u %s -v %s" % (
+                    path = "%s/src/update.py -u %s -o %s --owner %s --group %s" % (
                         pathlib.Path(__file__).parent.parent.absolute(),
-                        data['release']['url'])
+                        data['release']['url'],
+                        output_dir,
+                        output_owner,
+                        output_group,
+                    )
 
                     print("Running in background", path)
                     subprocess.Popen(path)
@@ -66,7 +74,7 @@ if __name__ == '__main__':
         '-l',
         '--listen',
         default='localhost',
-        help='Specify the IP address on which the server listens',
+        help='The IP address on which the server listens',
     )
 
     parser.add_argument(
@@ -74,8 +82,16 @@ if __name__ == '__main__':
         '--port',
         type=int,
         default=8000,
-        help='Specify the port on which the server listens',
+        help='The port on which the server listens',
     )
 
+    parser.add_argument('--output', default='/srv/http', help='Output directory')
+    parser.add_argument('--owner', default='www-data', help='Owner of output directory')
+    parser.add_argument('--group', default='www-data', help='Group of output directory')
+
     args = parser.parse_args()
+    output_dir = args.output
+    output_owner = args.owner
+    output_group = args.group
+
     run(args.listen, args.port)
