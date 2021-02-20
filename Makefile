@@ -3,7 +3,7 @@
 #
 # make VERSION=<version> OWNER=<user> GROUP=<group> OUTPUT=<dir> create-repo
 # make VERSION=<version> OWNER=<user> GROUP=<group> OUTPUT=<dir> update-repo
-# make create-installer
+# make VERSION=<version> TYPE=<macos|windows> OUTPUT=<filename> create-installer
 #
 
 create-repo:
@@ -33,4 +33,6 @@ create-installer:
 		-v ${PWD}:/app \
 		ismd/screenshotgun-installer \
 		/app/src/create-installer.py \
-		-o /app
+		-o /app/$(OUTPUT) \
+		-v $(VERSION) \
+		-t $(TYPE)
