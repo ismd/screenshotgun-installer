@@ -13,5 +13,5 @@ if __name__ == '__main__':
     args = parser.parse_args()
     config_path = update_packages(args.config, args.version)
 
-    os.system('repogen -v --update -p "%s/macos/packages" "%s/macos"' % (config_path, args.path))
-    os.system('repogen -v --update -p "%s/windows/packages" "%s/windows"' % (config_path, args.path))
+    os.system('repogen -v --update -p "%s/macos/packages" "%s/macos"' % (config_path, args.output))
+    os.system('repogen -v --update -p "%s/windows/packages" "%s/windows"' % (config_path, args.output))
